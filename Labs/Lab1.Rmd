@@ -1,0 +1,109 @@
+---
+title: "STAT3550_Lab1"
+author: "Luke Rodriguez"
+date: "2026-01-21"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(MASS)
+library(ISLR2)
+```
+Fit a simple linear regressio nmodel using the botton dataset, with median house value as the response variable low economic status as the explanatory variable.
+```{r}
+head(Boston)
+attach(Boston)
+lm.fit <- lm(medv ~ lstat) # y ~ x
+```
+
+view the output of the model using the summary function
+```{r}
+lm.fit
+summary(lm.fit)
+
+```
+
+Coefficient
+```{r}
+coef(lm.fit)
+```
+
+Confidence intervals 
+Use the confint function to create a 95% CI
+```{r}
+confint(lm.fit)
+```
+
+Do predictions and create prediction intervals based on 3 new values of lstat variable (5, 10, and 15).
+```{r}
+predict(lm.fit, data.frame(lstat = (c(5, 10, 15))), interval = "prediction")
+```
+
+visualizing the model
+```{r}
+plot(lstat, medv)
+abline(lm.fit)
+```
+
+Notice that the model seems relatively linear, but may show some nonlinearity, particularly seen in lower values values of lstat.
+
+checking model assumptions
+```{r}
+par(mfrow = c(2,2))
+plot(lm.fit)
+```
+
+Notice that the residuals are not exhibiting constant variance, which might indicate that the model assumptions are not satisfied. Perhaps a different model will work etter for our data.
+
+Multiple linear gression
+
+Fit a model with two predictors
+```{r}
+lm.fit <- lm(medv ~ lstat + age, data = Boston)
+summary(lm.fit)
+```
+
+Fit a model with all predictors
+```{r}
+lm.fit <- lm(medv ~., data = Boston) # take all the other variables as the explanatory variables (if leave x out)
+summary(lm.fit)
+```
+
+nonlinear transformations
+
+using the boston housing dataset, investigate whether the relationship between median house value(medv) and percentage 
+
+```{r}
+```
+
+polynomial moel
+
+fit a quadratic regression model
+```{r}
+#linear model 
+lm_linear <- lm(medv ~ lstat, data = Boston)
+summary(lm_linear)
+
+#quadratic model
+lm_quad <- lm(medv ~ lstat + I(lstat^2), data = Boston)
+summary(lm_quad)
+```
+
+Run anova test to see if the model improves form the original linear model when adding the quadratic term.
+```{r}
+anova(lm_linear, lm_quad)
+```
+
+```{r}
+par(mfrow = c(2,2)) # use par to compare parallel
+plot(lm_quad)
+```
+
+log linear model
+```{r}
+#scatterplot
+```
