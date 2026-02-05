@@ -242,8 +242,61 @@ plot(chlorine_data$x, chlorine_data$y, pch=19, main="Mitcherlich Fit")
 lines(chlorine_data$x, predict(mitch_model), col="red", lwd=2)
 ```
 
+\newpage
+Question 3.16:
+```{r}
+# 1. Input data from the image
+df <- data.frame(
+  x = c(0.417, 0.417, 0.417, 0.833, 0.833, 0.833, 1.670, 1.670, 
+        3.750, 3.750, 6.250, 6.250, 6.250),
+  y = c(0.0773895, 0.0688714, 0.0819351, 0.0737034, 0.0738753, 
+        0.0712396, 0.0650420, 0.0547667, 0.0497128, 0.0642727, 
+        0.0613005, 0.0643576, 0.0393892)
+)
+
+# 2. Fit the Michaelis-Menten Model: y = (theta1 * x) / (theta2 + x)
+# We use 'nls'. Note: theta1 is Vmax, theta2 is Km.
+# Given the downward trend, theta1 will likely be negative.
+mm_fit <- nls(y ~ (theta1 * x) / (theta2 + x), 
+              data = df, 
+              start = list(theta1 = 0.05, theta2 = -1))
+
+# 3. View the results (Coefficients, Standard Errors, p-values)
+summary(mm_fit)
+
+# 4. Investigate Adequacy: Residual Analysis
+# We check if the errors are randomly distributed
+df$residuals <- resid(mm_fit)
+df$fitted <- predict(mm_fit)
+
+# Plot 1: Data vs. Fitted Model
+plot(df$x, df$y, main="Michaelis-Menten Fit", xlab="Concentration (x)", ylab="Velocity (y)")
+lines(seq(0, 7, 0.1), predict(mm_fit, newdata=data.frame(x=seq(0, 7, 0.1))), col="blue")
+
+# Plot 2: Residual Plot
+plot(df$fitted, df$residuals, main="Residual Plot", 
+     xlab="Fitted Values", ylab="Residuals")
+abline(h = 0, lty = 2, col="red")
+
+# 5. Formal Adequacy Check: Lack of Fit Test
+# Since we have replicates at x = 0.417, 0.833, etc., we can compare the 
+# nonlinear model to a saturated model (ANOVA)
+fit_reduced <- mm_fit
+fit_full <- lm(y ~ as.factor(x), data = df) # Treatment model for pure error
+anova(fit_reduced, fit_full)
+```
+Analysis of the Output
+- The Fit: Because your y values decrease, the theta1 (asymptotic maximum) will likely come out as a negative number or a very large number with a negative theta2. This indicates the Michaelis-Menten model—which describes growth toward a plateau—is fundamentally the wrong shape for this specific biological process.
+- Adequacy: Look at the Residual Plot. If you see a clear "U" shape or a trend, the model is inadequate.
+- Lack of Fit Test: In the anova() output, if the p-value is < 0.05, it means the Michaelis-Menten model is failing to capture the structure of the data significantly worse than a simple "mean per group" model would.
 
 \newpage
+Question 3.18:
+
+
+\newpage
+Previous version:
+
 Question 3.11:
 ```{r}
 # ============================================
@@ -771,3 +824,4 @@ par(mfrow = c(1, 1))
 ```
 
 \newpage
+Question 3.18:
